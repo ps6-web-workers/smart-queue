@@ -3,20 +3,20 @@ const knex = require('../connection');
 async function getAllQueues() {
     const queues = await knex('queues').select('*');
     for (let j = 0; j < queues.length; j++) {
-        queues[j].users = [];
+        queues[j].tickets = [];
     }
-    const usersToQueues = await knex.table('usersToQueues')
-        .leftJoin('users', 'usersToQueues.userLogin', '=', 'users.login')
-        .column({queueId: 'usersToQueues.id'}, 'queueName', 'login', 'firstName', 'lastName')
+    const tickets = await knex.table('tickets')
+        .leftJoin('users', 'tickets.userLogin', '=', 'users.login')
+        .column({ticketId: 'tickets.id'}, 'queueName', 'login', 'firstName', 'lastName')
         .select('*');
-    for (let i = 0; i < usersToQueues.length; i++) {
+    for (let i = 0; i < tickets.length; i++) {
         for (let j = 0; j < queues.length; j++) {
-            if (usersToQueues[i].queueName === queues[j].name) {
-                queues[j].users.push({
-                    id: usersToQueues[i].queueId,
-                    login: usersToQueues[i].login,
-                    firstName: usersToQueues[i].firstName,
-                    lastName: usersToQueues[i].lastName
+            if (tickets[i].queueName === queues[j].name) {
+                queues[j].tickets.push({
+                    ticketId: tickets[i].ticketId,
+                    userLogin: tickets[i].login,
+                    userFirstName: tickets[i].firstName,
+                    userLastName: tickets[i].lastName
                 });
             }
         }
@@ -24,6 +24,82 @@ async function getAllQueues() {
     return queues;
 }
 
+async function getQueueById(id) {
+    const queues = await knex('queues')
+        .select('*')
+        .where({ id: +id });
+    if (queues.length === 0) {
+        throw new Error('Queue not found');
+    }
+    const queue = queues[0];
+    queue.tickets = [];
+
+    const tickets = await knex.table('tickets')
+        .select('*')
+        .where({queueName: queue.name})
+        .leftJoin('users', 'tickets.userLogin', '=', 'users.login')
+        .column({ticketId: 'tickets.id'}, 'queueName', 'login', 'firstName', 'lastName')
+        .select('*');
+
+    for (let i = 0; i < tickets.length; i++) {
+        queue.tickets.push({
+            ticketId: tickets[i].ticketId,
+            userLogin: tickets[i].login,
+            userFirstName: tickets[i].firstName,
+            userLastName: tickets[i].lastName
+        });
+    }
+    return queue;
+}
+
+/*
+async function nextTicket(id) {
+    let nextTicket = {};
+
+    const lastTwoTickets = await knex('tickets')
+        .select('tickets.id', 'userLogin')
+        .leftJoin('queues', 'tickets.queueName', '=', 'queues.name')
+        .where('queues.id', id)
+        .orderBy('tickets.id', 'desc')
+        .limit(2);
+
+    console.log(lastTwoTickets);
+
+    if (lastTwoTickets.length === 0) {
+        throw new Error('No tickets found');
+    } else if (lastTwoTickets.length > 1) {
+        nextTicket = await knex('users')
+            .select('*')
+            .where({ login: lastTwoTickets[1].userLogin});
+        nextTicket.ticketId = lastTwoTickets[1].ticketId;
+    }
+
+    await knex('tickets')
+        .where({ id: lastTwoTickets[0].id })
+        .del();
+
+    return nextTicket;
+}
+*/
+
+async function nextTicket(queueId) {
+
+    const lastTicket = await knex('tickets')
+        .select('tickets.id')
+        .leftJoin('queues', 'tickets.queueName', '=', 'queues.name')
+        .where('queues.id', queueId)
+        .orderBy('tickets.id', 'desc')
+        .limit(1);
+
+    await knex('tickets')
+        .where({ id: lastTicket[0].id })
+        .del();
+
+    return await getAllQueues();
+}
+
 module.exports = {
     getAllQueues,
+    getQueueById,
+    nextTicket
 };

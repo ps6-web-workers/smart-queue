@@ -34,6 +34,36 @@ exports.seed = (knex) => {
                 firstName: 'Donélia',
                 lastName: 'Monin',
             });
+            await knex('users').insert({
+                login: 'vincentc',
+                firstName: 'Vincent',
+                lastName: 'Coppe',
+            });
+            await knex('users').insert({
+                login: 'armand',
+                firstName: 'Armand',
+                lastName: 'Boulanger',
+            });
+            await knex('users').insert({
+                login: 'alexn',
+                firstName: 'Alexandre',
+                lastName: 'Nicaise',
+            });
+            await knex('users').insert({
+                login: 'kevinv',
+                firstName: 'Kevin',
+                lastName: 'Valerio',
+            });
+            await knex('users').insert({
+                login: 'yannis',
+                firstName: 'Yannis',
+                lastName: 'Falco',
+            });
+            await knex('users').insert({
+                login: 'gabriel',
+                firstName: 'Gabriel',
+                lastName: 'Revelli',
+            });
 
 
             // QUEUES
@@ -51,60 +81,60 @@ exports.seed = (knex) => {
 
 
             // USERS TO QUEUES
-            await knex('usersToQueues').del();
+            await knex('tickets').del();
 
             // BRI
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'BRI',
                 userLogin: 'romain'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'BRI',
                 userLogin: 'anass'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'BRI',
                 userLogin: 'yury'
             });
 
             // Responsable de stage
-            await knex('usersToQueues').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'romain'
-            });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Responsable de stage',
                 userLogin: 'nouamane'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Responsable de stage',
                 userLogin: 'paul-marie'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Responsable de stage',
                 userLogin: 'donelia'
             });
+            await knex('tickets').insert({
+                queueName: 'Responsable de stage',
+                userLogin: 'vincentc'
+            });
 
             // Tuteur de stage
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Tuteur de stage',
-                userLogin: 'yury'
+                userLogin: 'armand'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Tuteur de stage',
-                userLogin: 'nouamane'
+                userLogin: 'alexn'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Tuteur de stage',
-                userLogin: 'romain'
+                userLogin: 'kevinv'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Tuteur de stage',
-                userLogin: 'donelia'
+                userLogin: 'yannis'
             });
-            await knex('usersToQueues').insert({
+            await knex('tickets').insert({
                 queueName: 'Tuteur de stage',
-                userLogin: 'anass'
+                userLogin: 'gabriel'
             });
 
             resolve();

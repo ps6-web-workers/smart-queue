@@ -1,5 +1,5 @@
 exports.up = (knex) => {
-    return knex.schema.createTable('usersToQueues', (table) => {
+    return knex.schema.createTable('tickets', (table) => {
         table.increments();
         table.string('queueName').notNullable();
         table.string('userLogin').notNullable();
@@ -9,5 +9,5 @@ exports.up = (knex) => {
 };
 
 exports.down = (knex) => {
-    return knex.schema.dropTable('usersToQueues');
+    return knex.schema.dropTable('tickets');
 };
