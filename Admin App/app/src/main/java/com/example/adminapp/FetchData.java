@@ -116,6 +116,38 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
     }
 
     void deleteCurrentUser(int id) throws IOException, JSONException {
+        // Instantiate the RequestQueue.
+        singleton = SingletonRequestQueue.getInstance(this);
+        String url = "http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket";
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        Type data_type = new TypeToken<ArrayList<Queue>>(){}.getType();
+                        ArrayList<Queue> queues = gson.fromJson(response.toString(), data_type);
+                        StringBuilder str = new StringBuilder();
+                        for (Queue q : queues) {
+                            str.append(q.toString() + "\n");
+                        }
+                        Log.d(TAG, str);
+                }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        status.setText("Oups! ça marche pas très bien...");
+                        Log.d(TAG, error.toString());
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        singleton.addToRequestQueue(jsonArrayRequest);
+
+        /*
         URL deleteURL = deleteUserURL(id);
         HttpURLConnection httpURLConnection = (HttpURLConnection) deleteURL.openConnection();
         httpURLConnection.setRequestMethod("GET");
@@ -137,6 +169,6 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
             JSONObject jsonObject1 = (JSONObject) jsonObject.get("tickets");
             System.out.println(jsonObject.get("userFirstName"));
         }
-        httpURLConnection.disconnect();
+        httpURLConnection.disconnect();*/
     }
 }
