@@ -83,23 +83,43 @@ async function nextTicket(id) {
 */
 
 async function nextTicket(queueId) {
-
-    const lastTicket = await knex('tickets')
+    const firstTicket = await knex('tickets')
         .select('tickets.id')
         .leftJoin('queues', 'tickets.queueName', '=', 'queues.name')
         .where('queues.id', queueId)
-        .orderBy('tickets.id', 'desc')
+        .orderBy('tickets.id', 'asc')
         .limit(1);
 
+    if (firstTicket.length === 0) {
+        throw new Error('No tickets left');
+    }
+
     await knex('tickets')
-        .where({ id: lastTicket[0].id })
+        .where({ id: firstTicket[0].id })
         .del();
 
     return await getAllQueues();
 }
 
+async function currentTicket(queueId) {
+    const firstTicket = await knex('tickets')
+        .select({ ticketId: 'tickets.id' }, { userLogin: 'users.login'}, { userFirstName: 'users.firstName'}, { userLastName: 'users.lastName'})
+        .leftJoin('queues', 'tickets.queueName', '=', 'queues.name')
+        .leftJoin('users', 'tickets.userLogin', '=', 'users.login')
+        .where('queues.id', queueId)
+        .orderBy('tickets.id', 'asc')
+        .limit(1);
+
+    if (firstTicket.length === 0) {
+        throw new Error('No tickets found');
+    }
+
+    return firstTicket[0];
+}
+
 module.exports = {
     getAllQueues,
     getQueueById,
-    nextTicket
+    nextTicket,
+    currentTicket
 };

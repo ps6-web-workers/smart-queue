@@ -27,13 +27,20 @@ router.get(`${BASE_URL}/:id`, async (ctx) => {
     }
 });
 
-// return the next ticket (or empty object if there is no tickets left) and deletes the previous one
 router.get(`${BASE_URL}/:id/nextTicket`, async (ctx) => {
     try {
         const queues = await queries.nextTicket(ctx.params.id);
         utils.success(ctx, queues);
     } catch (e) {
-        console.log(e);
+        utils.failure(ctx, e);
+    }
+});
+
+router.get(`${BASE_URL}/:id/currentTicket`, async (ctx) => {
+    try {
+        const ticket = await queries.currentTicket(ctx.params.id);
+        utils.success(ctx, ticket);
+    } catch (e) {
         utils.failure(ctx, e);
     }
 });
