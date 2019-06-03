@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         queues.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this,listes_des_etudiants.class);
+                Intent intent = new Intent(MainActivity.this, ListesDesEtudiantsActivity.class);
                 intent.putExtra("nomdelaliste",queuesnames.get(position));
                 startActivity(intent);
             }
