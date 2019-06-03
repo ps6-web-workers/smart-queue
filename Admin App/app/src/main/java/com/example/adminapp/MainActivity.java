@@ -7,6 +7,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     Button nextButton;
@@ -54,7 +58,13 @@ public class MainActivity extends AppCompatActivity {
         nextButtonTuteur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nextTuteur();
+                try {
+                    nextTuteur();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -104,24 +114,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void nextTuteur() {
-        if(fetchData.studentArrayListTuteur.size() != 0) {
-            Toast.makeText(getApplicationContext(), "NEEEEEEEXT ! Tuteur Stage", Toast.LENGTH_SHORT).show();
-            fetchData.studentArrayListTuteur.remove(0);
-            if(fetchData.studentArrayListTuteur.size() != 0) {
-                prenomTuteur.setText("Prénom : " + fetchData.studentArrayListTuteur.get(0).getfName());
-                nomTuteur.setText("Nom : " + fetchData.studentArrayListTuteur.get(0).getlName());
-            }
-            else {
-                prenomTuteur.setText("Prénom : ");
-                nomTuteur.setText("Nom : ");
-                Toast.makeText(getApplicationContext(), "Plus d'étudiants !", Toast.LENGTH_SHORT).show();
-            }
-        }
-        else {
-            prenomTuteur.setText("Prénom : ");
-            nomTuteur.setText("Nom : ");
-            Toast.makeText(getApplicationContext(), "Plus d'étudiants !", Toast.LENGTH_SHORT).show();
-        }
+    public void nextTuteur() throws IOException, JSONException {
+        Toast.makeText(getApplicationContext(), "Deleted !", Toast.LENGTH_SHORT).show();
+        //fetchData.deleteCurrentUser(3);
     }
 }

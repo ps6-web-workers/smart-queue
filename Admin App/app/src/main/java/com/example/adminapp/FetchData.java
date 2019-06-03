@@ -22,6 +22,9 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
     ArrayList<Student> studentArrayListBRI = new ArrayList<>();
     ArrayList<Student> studentArrayListRespoStage = new ArrayList<>();
     ArrayList<Student> studentArrayListTuteur = new ArrayList<>();
+    Student currentStudentBRI;
+    Student currentStudentRespo;
+    Student currentStudentTuteur;
 
     @Override
     protected Void doInBackground(Void... voids) {
@@ -39,34 +42,47 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
                 data = data + line;
             }
 
+
             JSONArray jsonArray = new JSONArray(data);
 
 
             for(int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                singleParsed =  "Id : " + jsonObject.get("id") + "\n"
-                        + "Name : " + jsonObject.get("name") + "\n";
-                JSONArray myTickets = (JSONArray) jsonObject.get("tickets");
-                for(int j = 0; j < myTickets.length(); j++) {
-                    JSONObject myTicket = (JSONObject) myTickets.get(j);
-                    singleParsed += "TicketID : " + myTicket.get("ticketId") + "\n"
-                            + "userFirstName : " + myTicket.get("userFirstName") + "\n"
-                            + "userLastName : " + myTicket.get("userLastName") + "\n";
-                    System.out.println(jsonObject.get("name"));
-                    if(jsonObject.get("name").equals("BRI")) {
-                        studentArrayListBRI.add(new Student((String) myTicket.get("userFirstName"), (String) myTicket.get("userLastName")));
-                    }
-
-                    if(jsonObject.get("name").equals("Responsable de stage")) {
-                        studentArrayListRespoStage.add(new Student((String) myTicket.get("userFirstName"), (String) myTicket.get("userLastName")));
-                    }
-
-                    if(jsonObject.get("name").equals("Tuteur de stage")) {
-                        studentArrayListTuteur.add(new Student((String) myTicket.get("userFirstName"), (String) myTicket.get("userLastName")));
-                    }
+                URL thisUrl = null;
+                if(jsonObject.get("name").equals("BRI")) {
+                    thisUrl = currentUserURL(1);
                 }
-                dataParsed += singleParsed + "\n";
+                if(jsonObject.get("name").equals("Responsable de stage")) {
+                    thisUrl = currentUserURL(2);
+                }
+                if(jsonObject.get("name").equals("Tuteur de stage")) {
+                    thisUrl = currentUserURL(3);
+                }
+
+                HttpURLConnection httpURLConnection1 = (HttpURLConnection) thisUrl.openConnection();
+                httpURLConnection1.setRequestMethod("GET");
+                httpURLConnection1.setRequestProperty("User-Agent", "Mozilla/5.0");
+                InputStream inputStream1 = httpURLConnection1.getInputStream();
+                BufferedReader bufferedReader1 = new BufferedReader(new InputStreamReader(inputStream1));
+                String line1="";
+                String data1="";
+                while(line1 != null) {
+                    line1 = bufferedReader1.readLine();
+                    data1 = data1 + line1;
+                }
+                JSONObject jsonObject1 = new JSONObject(data1);
+                if(jsonObject.get("name").equals("BRI")) {
+                    currentStudentBRI = new Student((String) jsonObject1.get("userFirstName"), (String) jsonObject1.get("userLastName"));
+                }
+                if(jsonObject.get("name").equals("Responsable de stage")) {
+                    currentStudentRespo = new Student((String) jsonObject1.get("userFirstName"), (String) jsonObject1.get("userLastName"));
+                }
+                if(jsonObject.get("name").equals("Tuteur de stage")) {
+                    currentStudentTuteur = new Student((String) jsonObject1.get("userFirstName"), (String) jsonObject1.get("userLastName"));
+                }
+                httpURLConnection1.disconnect();
             }
+            deleteCurrentUser(3);
 
             httpURLConnection.disconnect();
         } catch (MalformedURLException e) {
@@ -83,11 +99,44 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         //MainActivity.data.setText(this.dataParsed);
-        MainActivity.prenomBRI.setText("Prénom : " + studentArrayListBRI.get(0).getfName());
-        MainActivity.nomBRI.setText("Nom : " + studentArrayListBRI.get(0).getlName());
-        MainActivity.prenomRespoStage.setText("Prénom : " + studentArrayListRespoStage.get(0).getfName());
-        MainActivity.nomRespoStage.setText("Nom : " + studentArrayListRespoStage.get(0).getlName());
-        MainActivity.prenomTuteur.setText("Prénom : " + studentArrayListTuteur.get(0).getfName());
-        MainActivity.nomTuteur.setText("Nom : " + studentArrayListTuteur.get(0).getlName());
+        MainActivity.prenomBRI.setText("Prénom : " + currentStudentBRI.getfName());
+        MainActivity.nomBRI.setText("Nom : " + currentStudentBRI.getlName());
+        MainActivity.prenomRespoStage.setText("Prénom : " + currentStudentRespo.getfName());
+        MainActivity.nomRespoStage.setText("Nom : " + currentStudentRespo.getlName());
+        MainActivity.prenomTuteur.setText("Prénom : " + currentStudentTuteur.getfName());
+        MainActivity.nomTuteur.setText("Nom : " + currentStudentTuteur.getlName());
+    }
+
+    URL currentUserURL(int id) throws MalformedURLException {
+        return new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/currentTicket");
+    }
+
+    URL deleteUserURL(int id) throws MalformedURLException {
+        return new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket");
+    }
+
+    void deleteCurrentUser(int id) throws IOException, JSONException {
+        URL deleteURL = deleteUserURL(id);
+        HttpURLConnection httpURLConnection = (HttpURLConnection) deleteURL.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+        httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
+        InputStream inputStream = httpURLConnection.getInputStream();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String line="";
+
+        while(line != null) {
+            line = bufferedReader.readLine();
+            data = data + line;
+        }
+
+
+        JSONArray jsonArray = new JSONArray(data);
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+            System.out.println(jsonObject + "\n");
+            JSONObject jsonObject1 = (JSONObject) jsonObject.get("tickets");
+            System.out.println(jsonObject.get("userFirstName"));
+        }
+        httpURLConnection.disconnect();
     }
 }
