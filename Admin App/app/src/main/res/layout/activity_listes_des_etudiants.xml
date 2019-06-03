@@ -12,6 +12,16 @@
         android:orientation="vertical"
         tools:ignore="MissingConstraints">
 
+        <TextView
+            android:id="@+id/nomdelaliste"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="20dp"
+            android:layout_marginBottom="20dp"
+            android:textColor="@android:color/black"
+            android:gravity="center"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -54,7 +64,7 @@
             android:layout_width="187dp"
             android:layout_height="77dp"
             android:layout_marginLeft="150dp"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="130dp"
             android:text="Suivant" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

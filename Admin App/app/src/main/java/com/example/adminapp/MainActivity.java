@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         queuesnames = new ArrayList<>();
         queuesnames.add("BRI");
         queuesnames.add("Responsable de stage");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,queuesnames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,queuesnames);
         queues.setAdapter(adapter);
         queues.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
