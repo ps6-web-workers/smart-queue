@@ -1,13 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <ListView
-        android:id="@+id/queues"
+    <LinearLayout
+        android:id="@+id/BRI"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</android.support.constraint.ConstraintLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Liste BRI : Etudiant en cours : "
+            android:textSize="20dp" />
+
+        <LinearLayout
+            android:id="@+id/currentStudentBRI"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/prenomBRI"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Prénom : "
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/nomBRI"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nom : "
+                android:textSize="20dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorAccent"
+            android:text="SUIVANT"
+            android:textColor="#fff"
+            android:textSize="24dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/responsable_Stage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:text="Liste Responsable de Stage \n Etudiant en cours : "
+            android:textSize="20dp" />
+
+        <LinearLayout
+            android:id="@+id/currentStudentRespoStage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/prenomRespoStage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Prénom : "
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/nomRespoStage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nom : "
+                android:textSize="20dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/nextButtonRespoStage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorAccent"
+            android:text="SUIVANT"
+            android:textColor="#fff"
+            android:textSize="24dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:text="Liste Tuteur de Stage \n Etudiant en cours : "
+            android:textSize="20dp" />
+
+        <LinearLayout
+            android:id="@+id/currentStudentTuteur"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/prenomTuteur"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Prénom : "
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/nomTuteur"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nom : "
+                android:textSize="20dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/nextButtonTuteur"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorAccent"
+            android:text="SUIVANT"
+            android:textColor="#fff"
+            android:textSize="24dp" />
+    </LinearLayout>
+
+
+</LinearLayout>
