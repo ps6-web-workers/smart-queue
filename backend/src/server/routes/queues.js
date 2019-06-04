@@ -30,6 +30,7 @@ router.get(`${BASE_URL}/:id`, async (ctx) => {
 router.get(`${BASE_URL}/:id/nextTicket`, async (ctx) => {
     try {
         const queues = await queries.nextTicket(ctx.params.id);
+        require('../index').io.sockets.emit('update', queues);
         utils.success(ctx, queues);
     } catch (e) {
         utils.failure(ctx, e);
@@ -38,8 +39,8 @@ router.get(`${BASE_URL}/:id/nextTicket`, async (ctx) => {
 
 router.get(`${BASE_URL}/:id/currentTicket`, async (ctx) => {
     try {
-        const ticket = await queries.currentTicket(ctx.params.id);
-        utils.success(ctx, ticket);
+        const ticket = await queries.getCurrentTicket(ctx.params.id);
+        utils.success(ctx, {ticketId: ticket.id, status: ticket.status, userLogin: ticket.login, userFirstName: ticket.firstName, userLastName: ticket.lastName });
     } catch (e) {
         utils.failure(ctx, e);
     }
