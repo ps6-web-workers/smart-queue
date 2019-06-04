@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.example.studentapp.Fragments.QueueFragment;
 import com.example.studentapp.Models.Queue;
 
 import java.util.ArrayList;
