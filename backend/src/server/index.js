@@ -23,4 +23,9 @@ if (process.env.ALWAYSDATA_HTTPD_PORT && process.env.ALWAYSDATA_HTTPD_IP) {
     });
 }
 
-module.exports = server;
+const io = require('socket.io').listen(server);
+
+module.exports = {
+    server,
+    io,
+};

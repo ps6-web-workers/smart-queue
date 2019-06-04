@@ -5,13 +5,13 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
-const server = require('../src/server/index');
+const index = require('../src/server/index');
 
 // simple test just to verify if the server is running
 describe('routes : index', () => {
     describe('GET /', () => {
         it('should return json', (done) => {
-            chai.request(server)
+            chai.request(index.server)
                 .get('/')
                 .end((err, res) => {
                     should.not.exist(err);

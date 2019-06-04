@@ -80,61 +80,99 @@ exports.seed = (knex) => {
             });
 
 
-            // USERS TO QUEUES
+            // ALL TICKETS
             await knex('tickets').del();
 
             // BRI
             await knex('tickets').insert({
-                queueName: 'BRI',
-                userLogin: 'romain'
+                status: 'active',
+                queueId: 1,
+                userId: 1
             });
             await knex('tickets').insert({
-                queueName: 'BRI',
-                userLogin: 'anass'
+                status: 'active',
+                queueId: 1,
+                userId: 5
             });
             await knex('tickets').insert({
-                queueName: 'BRI',
-                userLogin: 'yury'
-            });
+                status: 'active',
+                queueId: 1,
+                userId: 2
+        });
 
             // Responsable de stage
             await knex('tickets').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'nouamane'
+                status: 'active',
+                queueId: 2,
+                userId: 3
             });
             await knex('tickets').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'paul-marie'
+                status: 'passive',
+                queueId: 2,
+                userId: 1
             });
             await knex('tickets').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'donelia'
+                status: 'active',
+                queueId: 2,
+                userId: 4
             });
             await knex('tickets').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'vincentc'
+                status: 'active',
+                queueId: 2,
+                userId: 6
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 2,
+                userId: 7
             });
 
             // Tuteur de stage
             await knex('tickets').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'armand'
+                status: 'active',
+                queueId: 3,
+                userId: 8
             });
             await knex('tickets').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'alexn'
+                status: 'passive',
+                queueId: 3,
+                userId: 1
             });
             await knex('tickets').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'kevinv'
+                status: 'active',
+                queueId: 3,
+                userId: 9
             });
             await knex('tickets').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'yannis'
+                status: 'active',
+                queueId: 3,
+                userId: 10
             });
             await knex('tickets').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'gabriel'
+                status: 'active',
+                queueId: 3,
+                userId: 11
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 3,
+                userId: 12
+            });
+
+            // CURRENT TICKETS
+            await knex('currentTickets').del();
+
+            await knex('currentTickets').insert({
+                queueId: 1,
+                ticketId: 1
+            });
+            await knex('currentTickets').insert({
+                queueId: 2,
+                ticketId: 4
+            });
+            await knex('currentTickets').insert({
+                queueId: 3,
+                ticketId: 8
             });
 
             resolve();

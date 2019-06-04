@@ -6,14 +6,17 @@ async function getAllQueues() {
         queues[j].tickets = [];
     }
     const tickets = await knex.table('tickets')
-        .leftJoin('users', 'tickets.userLogin', '=', 'users.login')
-        .column({ticketId: 'tickets.id'}, 'queueName', 'login', 'firstName', 'lastName')
-        .select('*');
+        .select('*')
+        .leftJoin('users', 'tickets.userId', '=', 'users.id')
+        .leftJoin('queues', 'tickets.queueId', '=', 'queues.id')
+        .column({ticketId: 'tickets.id'}, 'status', 'login', 'firstName', 'lastName');
+
     for (let i = 0; i < tickets.length; i++) {
         for (let j = 0; j < queues.length; j++) {
-            if (tickets[i].queueName === queues[j].name) {
+            if (tickets[i].queueId === queues[j].id) {
                 queues[j].tickets.push({
                     ticketId: tickets[i].ticketId,
+                    ticketStatus: tickets[i].status,
                     userLogin: tickets[i].login,
                     userFirstName: tickets[i].firstName,
                     userLastName: tickets[i].lastName
@@ -35,15 +38,16 @@ async function getQueueById(id) {
     queue.tickets = [];
 
     const tickets = await knex.table('tickets')
+        .leftJoin('users', 'tickets.userId', '=', 'users.id')
+        .leftJoin('queues', 'tickets.queueId', '=', 'queues.id')
+        .column({ticketId: 'tickets.id'}, 'status', 'login', 'firstName', 'lastName')
         .select('*')
-        .where({queueName: queue.name})
-        .leftJoin('users', 'tickets.userLogin', '=', 'users.login')
-        .column({ticketId: 'tickets.id'}, 'queueName', 'login', 'firstName', 'lastName')
-        .select('*');
+        .where({queueId: queue.id});
 
     for (let i = 0; i < tickets.length; i++) {
         queue.tickets.push({
             ticketId: tickets[i].ticketId,
+            status: tickets[i].status,
             userLogin: tickets[i].login,
             userFirstName: tickets[i].firstName,
             userLastName: tickets[i].lastName
@@ -82,44 +86,87 @@ async function nextTicket(id) {
 }
 */
 
-async function nextTicket(queueId) {
-    const firstTicket = await knex('tickets')
-        .select('tickets.id')
-        .leftJoin('queues', 'tickets.queueName', '=', 'queues.name')
-        .where('queues.id', queueId)
-        .orderBy('tickets.id', 'asc')
-        .limit(1);
 
-    if (firstTicket.length === 0) {
-        throw new Error('No tickets left');
+async function getCurrentTicket(queueId) {
+    const currentTicketId = await knex('currentTickets')
+        .select('*')
+        .where('queueId', queueId);
+    if (!currentTicketId[0]) {
+        throw new Error('No tickets available');
     }
-
-    await knex('tickets')
-        .where({ id: firstTicket[0].id })
-        .del();
-
-    return await getAllQueues();
+    const currentTicket = await knex('tickets')
+        .select('tickets.id', 'tickets.status', 'tickets.userId', 'tickets.queueId', 'users.login', 'users.firstName', 'users.lastName')
+        .where('tickets.id', currentTicketId[0].ticketId)
+        .leftJoin('users', 'tickets.userId', '=', 'users.id')
+        .leftJoin('queues', 'tickets.queueId', '=', 'queues.id');
+    return currentTicket[0];
 }
 
-async function currentTicket(queueId) {
-    const firstTicket = await knex('tickets')
-        .select({ ticketId: 'tickets.id' }, { userLogin: 'users.login'}, { userFirstName: 'users.firstName'}, { userLastName: 'users.lastName'})
-        .leftJoin('queues', 'tickets.queueName', '=', 'queues.name')
-        .leftJoin('users', 'tickets.userLogin', '=', 'users.login')
-        .where('queues.id', queueId)
-        .orderBy('tickets.id', 'asc')
+async function setCurrentTicket(queueId, ticketId) {
+    const currentTicket = await knex('currentTickets')
+        .insert({ queueId: queueId, ticketId: ticketId });
+}
+
+async function getFirstActiveTicket(queueId) {
+    const firstActiveTicket = await knex('tickets')
+        .select('*')
+        .where({queueId: queueId, status: 'active'})
+        .orderBy('id', 'asc')
         .limit(1);
-
-    if (firstTicket.length === 0) {
-        throw new Error('No tickets found');
+    if (!firstActiveTicket[0]) {
+        throw new Error('No tickets available');
     }
+    return firstActiveTicket[0];
+}
 
-    return firstTicket[0];
+async function setUserTicketsPassive(queueId, userId) {
+    await knex('tickets')
+        .where('userId', userId)
+        .where('queueId', '!=', queueId)
+        .update({
+            status: 'passive',
+        });
+}
+
+async function setUserTicketsActive(userId) {
+    await knex('tickets')
+        .where('userId', userId)
+        .update({
+            status: 'active',
+        });
+}
+
+async function deleteCurrentTicket(ticketId) {
+    await knex('tickets')
+        .where({ id: ticketId })
+        .del();
+    await knex('currentTickets')
+        .where({ ticketId: ticketId })
+        .del();
+}
+
+async function nextTicket(queueId) {
+    try {
+        const currentTicket = await getCurrentTicket(queueId);
+        await deleteCurrentTicket(currentTicket.id);
+        await setUserTicketsActive(currentTicket.userId);
+
+        const nextCurrentTicket = await getFirstActiveTicket(queueId);
+        await setCurrentTicket(queueId, nextCurrentTicket.id);
+        await setUserTicketsPassive(queueId, nextCurrentTicket.userId);
+    } catch (e) {
+        if (e.message === 'No tickets available') {
+            return await getAllQueues();
+        } else {
+            throw e;
+        }
+    }
+    return await getAllQueues();
 }
 
 module.exports = {
     getAllQueues,
     getQueueById,
     nextTicket,
-    currentTicket
+    getCurrentTicket
 };
