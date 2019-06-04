@@ -10,7 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
     private static final String CHANNEL_ID = "MainActivityNotificationChannel";
     private static final int NOTIFICATION_ID = 1;
+    private LinearLayout refresh_btn;
+    private ImageView refresh_icon;
     private TextView status;
     private final Gson gson = new Gson();
     private SingletonRequestQueue singleton;
@@ -92,12 +99,15 @@ public class MainActivity extends AppCompatActivity {
         userStored = userLocalStore.getStoredUser();
 
         this.status = (TextView)this.findViewById(R.id.status);
-        final Button refresh = (Button)this.findViewById(R.id.btn);
+        this.refresh_btn = (LinearLayout) this.findViewById(R.id.btn);
+        this.refresh_icon = (ImageView) this.findViewById(R.id.refresh_icon);
 
-        refresh.setVisibility(View.GONE);
-        refresh.setOnClickListener(new View.OnClickListener() {
+//        refresh.setVisibility(View.GONE);
+        refresh_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.press_refresh_animation);
+                refresh_icon.startAnimation(animation);
                 refreshText();
             }
         });
