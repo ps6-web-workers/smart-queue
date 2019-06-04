@@ -1,6 +1,7 @@
 package com.example.adminapp;
 
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,9 +16,9 @@ import java.net.URL;
 
 public class DisplayData extends AsyncTask<Integer, Void, Void> {
 
-    Student currentStudent;
+    private Student currentStudent;
 
-    public DisplayData() {
+    DisplayData() {
     }
 
     @Override
@@ -54,11 +55,17 @@ public class DisplayData extends AsyncTask<Integer, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         //MainActivity.data.setText(this.dataParsed);
-        InfosActivity.prenom.setText("Prénom : " + currentStudent.getfName());
-        InfosActivity.nom.setText("Nom : " + currentStudent.getlName());
+        if(currentStudent != null) {
+            InfosActivity.prenom.setText("Prénom : " + currentStudent.getfName());
+            InfosActivity.nom.setText("Nom : " + currentStudent.getlName());
+        }
+        else {
+            InfosActivity.prenom.setText("Prénom : ");
+            InfosActivity.nom.setText("Nom : ");
+        }
     }
 
-    URL currentUserURL(int id) throws MalformedURLException {
+    private URL currentUserURL(int id) throws MalformedURLException {
         return new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/currentTicket");
     }
 }
