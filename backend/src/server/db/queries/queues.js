@@ -146,14 +146,21 @@ async function deleteCurrentTicket(ticketId) {
 }
 
 async function nextTicket(queueId) {
-    const currentTicket = await getCurrentTicket(queueId);
-    await deleteCurrentTicket(currentTicket.id);
-    await setUserTicketsActive(currentTicket.userId);
+    try {
+        const currentTicket = await getCurrentTicket(queueId);
+        await deleteCurrentTicket(currentTicket.id);
+        await setUserTicketsActive(currentTicket.userId);
 
-    const nextCurrentTicket = await getFirstActiveTicket(queueId);
-    await setCurrentTicket(queueId, nextCurrentTicket.id);
-    await setUserTicketsPassive(queueId, nextCurrentTicket.userId);
-
+        const nextCurrentTicket = await getFirstActiveTicket(queueId);
+        await setCurrentTicket(queueId, nextCurrentTicket.id);
+        await setUserTicketsPassive(queueId, nextCurrentTicket.userId);
+    } catch (e) {
+        if (e.message === 'No tickets available') {
+            return await getAllQueues();
+        } else {
+            throw e;
+        }
+    }
     return await getAllQueues();
 }
 
