@@ -1,6 +1,15 @@
 package com.example.adminapp;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.adminapp.Models.Queue;
+import com.example.adminapp.Utils.SingletonRequestQueue;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,10 +19,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 public class FetchData extends AsyncTask<Void, Void, Void> {
     String data ="";
@@ -82,7 +94,7 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
                 }
                 httpURLConnection1.disconnect();
             }
-            deleteCurrentUser(3);
+            //deleteCurrentUser(3);
 
             httpURLConnection.disconnect();
         } catch (MalformedURLException e) {
@@ -115,60 +127,4 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
         return new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket");
     }
 
-    void deleteCurrentUser(int id) throws IOException, JSONException {
-        // Instantiate the RequestQueue.
-        singleton = SingletonRequestQueue.getInstance(this);
-        String url = "http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket";
-
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
-
-                    @Override
-                    public void onResponse(JSONArray response) {
-
-                        Type data_type = new TypeToken<ArrayList<Queue>>(){}.getType();
-                        ArrayList<Queue> queues = gson.fromJson(response.toString(), data_type);
-                        StringBuilder str = new StringBuilder();
-                        for (Queue q : queues) {
-                            str.append(q.toString() + "\n");
-                        }
-                        Log.d(TAG, str);
-                }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-                        status.setText("Oups! ça marche pas très bien...");
-                        Log.d(TAG, error.toString());
-                    }
-                });
-
-        // Access the RequestQueue through your singleton class.
-        singleton.addToRequestQueue(jsonArrayRequest);
-
-        /*
-        URL deleteURL = deleteUserURL(id);
-        HttpURLConnection httpURLConnection = (HttpURLConnection) deleteURL.openConnection();
-        httpURLConnection.setRequestMethod("GET");
-        httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
-        InputStream inputStream = httpURLConnection.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line="";
-
-        while(line != null) {
-            line = bufferedReader.readLine();
-            data = data + line;
-        }
-
-
-        JSONArray jsonArray = new JSONArray(data);
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-            System.out.println(jsonObject + "\n");
-            JSONObject jsonObject1 = (JSONObject) jsonObject.get("tickets");
-            System.out.println(jsonObject.get("userFirstName"));
-        }
-        httpURLConnection.disconnect();*/
-    }
 }
