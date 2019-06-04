@@ -4,4 +4,9 @@
     <string name="reponsable_de_stage">Reponsable de stage</string>
     <string name="tuteur_de_stage">Tuteur de stage</string>
     <string name="veuillez_choisir_une_liste">Veuillez choisir une liste</string>
+    <string name="liste">Liste ??? :</string>
+    <string name="etudiant_en_cours">Etudiant en cours :</string>
+    <string name="pr_nom">Prénom :</string>
+    <string name="nom">Nom :</string>
+    <string name="suivant">SUIVANT</string>
 </resources>

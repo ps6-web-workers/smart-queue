@@ -22,7 +22,7 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="150dp"
-            app:srcCompat="@drawable/Logo_Reseau_Polytech" />
+            app:srcCompat="@drawable/polytechlogo" />
 
         <TextView
             android:id="@+id/textView2"

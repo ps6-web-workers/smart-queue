@@ -126,16 +126,6 @@ public class MainActivity extends AppCompatActivity {
         URL url = new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket");
         DeleteData deleteData = new DeleteData();
         deleteData.execute(url);
-/*        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-        httpURLConnection.setRequestMethod("GET");
-*//*        InputStream inputStream = httpURLConnection.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line="";
-        String data="";
-        while(line != null) {
-            line = bufferedReader.readLine();
-            data += line;
-        }*/
         FetchData fetchData = new FetchData();
         fetchData.execute();
     }

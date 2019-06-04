@@ -45,20 +45,23 @@ public class MenuActivity extends AppCompatActivity {
 
 
     private void goToBRI() {
-        intent = new Intent(MenuActivity.this, MainActivity.class);
+        intent = new Intent(MenuActivity.this, InfosActivity.class);
         intent.putExtra("name", "BRI");
+        intent.putExtra("id", 1);
         startActivity(intent);
     }
 
     private void goToRespo() {
-        intent = new Intent(MenuActivity.this, MainActivity.class);
+        intent = new Intent(MenuActivity.this, InfosActivity.class);
         intent.putExtra("name", "RESPO");
+        intent.putExtra("id", 2);
         startActivity(intent);
     }
 
     private void goToTuteur() {
-        intent = new Intent(MenuActivity.this, MainActivity.class);
+        intent = new Intent(MenuActivity.this, InfosActivity.class);
         intent.putExtra("name", "TUTEUR");
+        intent.putExtra("id", 3);
         startActivity(intent);
     }
 }
