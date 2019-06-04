@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Admin App</string>
+    <string name="bri">BRI</string>
+    <string name="reponsable_de_stage">Reponsable de stage</string>
+    <string name="tuteur_de_stage">Tuteur de stage</string>
 </resources>

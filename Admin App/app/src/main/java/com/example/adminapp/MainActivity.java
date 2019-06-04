@@ -14,7 +14,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.adminapp.Models.Queue;
-import com.example.adminapp.Utils.SingletonRequestQueue;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -34,8 +33,6 @@ import java.util.ArrayList;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
-
-    private SingletonRequestQueue singleton;
     private final Gson gson = new Gson();
     Button nextButton;
     public static TextView prenomBRI;
