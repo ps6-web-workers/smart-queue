@@ -1,17 +1,7 @@
 package com.example.adminapp;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.example.adminapp.Models.Queue;
-import com.example.adminapp.Utils.SingletonRequestQueue;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,27 +9,66 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 
-import static android.content.ContentValues.TAG;
+public class DeleteData extends AsyncTask<URL, Integer, Long> {
 
-public class FetchData extends AsyncTask<Void, Void, Void> {
-    String data ="";
-    String dataParsed="";
-    String singleParsed="";
-    ArrayList<Student> studentArrayListBRI = new ArrayList<>();
-    ArrayList<Student> studentArrayListRespoStage = new ArrayList<>();
-    ArrayList<Student> studentArrayListTuteur = new ArrayList<>();
-    Student currentStudentBRI;
-    Student currentStudentRespo;
-    Student currentStudentTuteur;
+        private JSONObject jsonObject;
+        Student currentStudentBRI;
+        Student currentStudentRespo;
+        Student currentStudentTuteur;
+
+        public DeleteData() {
+        }
+
+        protected Long doInBackground(URL... urls) {
+            long totalSize = 0;
+            for (URL url : urls) {
+                requestContent(url);
+                totalSize++;
+            }
+            return totalSize;
+        }
+
+        public void requestContent(URL url) {
+
+            HttpURLConnection urlConnection = null;
+
+            try {
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                InputStream inputStream = urlConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line="";
+                String data="";
+                while(line != null) {
+                    line = bufferedReader.readLine();
+                    data += line;
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected void onPostExecute(Long aLong) {
+        super.onPostExecute(aLong);
+/*        MainActivity.prenomBRI.setText("Prénom : " + currentStudentBRI.getfName());
+        MainActivity.nomBRI.setText("Nom : " + currentStudentBRI.getlName());
+        MainActivity.prenomRespoStage.setText("Prénom : " + currentStudentRespo.getfName());
+        MainActivity.nomRespoStage.setText("Nom : " + currentStudentRespo.getlName());
+        MainActivity.prenomTuteur.setText("Prénom : " + currentStudentTuteur.getfName());
+        MainActivity.nomTuteur.setText("Nom : " + currentStudentTuteur.getlName());*/
+    }
+
+    private void refresh() {
         for(int i = 1; i < 4; i++) {
             try {
                 URL myURL = currentUserURL(i);
@@ -67,28 +96,9 @@ public class FetchData extends AsyncTask<Void, Void, Void> {
                 e.printStackTrace();
             }
         }
-
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        //MainActivity.data.setText(this.dataParsed);
-        MainActivity.prenomBRI.setText("Prénom : " + currentStudentBRI.getfName());
-        MainActivity.nomBRI.setText("Nom : " + currentStudentBRI.getlName());
-        MainActivity.prenomRespoStage.setText("Prénom : " + currentStudentRespo.getfName());
-        MainActivity.nomRespoStage.setText("Nom : " + currentStudentRespo.getlName());
-        MainActivity.prenomTuteur.setText("Prénom : " + currentStudentTuteur.getfName());
-        MainActivity.nomTuteur.setText("Nom : " + currentStudentTuteur.getlName());
     }
 
     URL currentUserURL(int id) throws MalformedURLException {
         return new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/currentTicket");
     }
-
-    URL deleteUserURL(int id) throws MalformedURLException {
-        return new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket");
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.example.studentapp.Models;
+package com.example.adminapp.Models;
 
 import java.util.Collection;
 

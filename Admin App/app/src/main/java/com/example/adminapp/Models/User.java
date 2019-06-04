@@ -1,4 +1,4 @@
-package com.example.studentapp.Models;
+package com.example.adminapp.Models;
 
 public class User {
     private String loggin;
