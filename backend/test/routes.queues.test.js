@@ -5,8 +5,8 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
-    const index = require('../src/server/index');
-    const knex = require('../src/server/db/connection');
+    const index = require('../src/tickets_service/index');
+    const knex = require('../src/tickets_service/db/connection');
 
     describe('routes : users', () => {
 

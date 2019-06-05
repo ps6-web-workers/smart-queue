@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.studentapp.Models.User;
-import com.example.studentapp.Utils.SingletonRequestQueue;
+import com.example.studentapp.Utils.Mqtt;
 import com.example.studentapp.Utils.UserLocalStore;
 import com.google.gson.Gson;
 
@@ -32,7 +32,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MainActivity extends AppCompatActivity {
-
     public static final String TAG = "MainActivity";
     private static final String CHANNEL_ID = "MainActivityNotificationChannel";
     private static final int NOTIFICATION_ID = 1;
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView refresh_icon;
     private TextView status;
     private final Gson gson = new Gson();
-    private SingletonRequestQueue singleton;
     private User userStored;
 
     private MqttAndroidClient mqttAndroidClient;
@@ -54,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        singleton = SingletonRequestQueue.getInstance(this);
 
         mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), serveurUri, clientId);
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
@@ -117,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
+        Mqtt mqtt = new Mqtt();
+        mqtt.currentTicket("2");
+
         final UserLocalStore userLocalStore = new UserLocalStore(this);
         userLocalStore.storeUserData(new User("yury", 1, "Yury", "Silvestrov-Henocq"));
         userStored = userLocalStore.getStoredUser();
@@ -141,9 +140,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (singleton.getRequestQueue() != null) {
-            singleton.getRequestQueue().cancelAll(TAG);
-        }
     }
 
     public void subscribeToTopic(){

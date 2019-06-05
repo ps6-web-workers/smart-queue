@@ -5,7 +5,7 @@ import java.util.Collection;
 public class Queue {
     private int id;
     private String name;
-    private Collection<Ticket> tickets;
+    private Collection tickets;
 
     public Queue(int id, String name, Collection tickets) {
         this.id = id;
