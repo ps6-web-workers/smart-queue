@@ -2,70 +2,36 @@ package com.example.studentapp;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.studentapp.Models.Ticket;
 import com.example.studentapp.Models.User;
 import com.example.studentapp.Utils.SingletonRequestQueue;
 import com.example.studentapp.Utils.UserLocalStore;
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import java.net.URISyntaxException;
-
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
-//import okhttp3.OkHttpClient;
-//import okhttp3.WebSocket;
-//import okhttp3.WebSocketListener;
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MainActivity extends AppCompatActivity {
-
-//    private class EchoWebSocketListener extends WebSocketListener {
-//        private static final String TAG = "EchoWebSocketListener";
-//        private static final int NORMAL_CLOSURE_STATUS = 1000;
-//
-//        @Override
-//        public void onOpen(WebSocket webSocket, okhttp3.Response response) {
-//            Log.v(TAG, "WebSocket oppened!");
-//        }
-//
-//        @Override
-//        public void onMessage(WebSocket webSocket, String text) {
-//            refreshText();
-//        }
-//
-//        @Override
-//        public void onClosing(WebSocket webSocket, int code, String reason) {
-//            webSocket.close(NORMAL_CLOSURE_STATUS, null);
-//            Log.v(TAG, "Closing WebSocket: " + code + " / " + reason);
-//        }
-//
-//        @Override
-//        public void onFailure(WebSocket webSocket, Throwable t, okhttp3.Response response) {
-//            Log.e(TAG, "WebSocket error : " + t.getMessage());
-//        }
-//    }
 
     public static final String TAG = "MainActivity";
     private static final String CHANNEL_ID = "MainActivityNotificationChannel";
@@ -77,7 +43,12 @@ public class MainActivity extends AppCompatActivity {
     private SingletonRequestQueue singleton;
     private User userStored;
 
-    private Socket socket;
+    private MqttAndroidClient mqttAndroidClient;
+    private final String serveurUri = "tcp://test.mosquitto.org:1883";
+    private String clientId = MqttClient.generateClientId();
+    private final String subscriptionTopic = "androidCurrentTicketResponse";
+    private final String publishTopic = "androidCurrentTicketRequest";
+    private String publishMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,17 +57,71 @@ public class MainActivity extends AppCompatActivity {
 
         singleton = SingletonRequestQueue.getInstance(this);
 
-//        OkHttpClient client = new OkHttpClient();
-//        okhttp3.Request request = new okhttp3.Request.Builder().url("http://yursilv.alwaysdata.net").build();
-//        EchoWebSocketListener listener = new EchoWebSocketListener();
-//        WebSocket ws = client.newWebSocket(request, listener);
+        mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), serveurUri, clientId);
+        mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
 
-        startWebSocket();
+                if (reconnect) {
+                    Log.d(TAG, "Reconnected to : " + serverURI);
+                    // Because Clean Session is true, we need to re-subscribe
+                    subscribeToTopic();
+                } else {
+                    Log.d(TAG, "Connected to: " + serverURI);
+                }
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+                Log.d(TAG, "The Connection was lost.");
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                String payload = new String(message.getPayload());
+                Log.d(TAG, "Incoming message payload: " + payload);
+                refreshText(Integer.parseInt(payload));
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setAutomaticReconnect(true);
+        mqttConnectOptions.setCleanSession(false);
+        try {
+            //addToHistory("Connecting to " + serverUri);
+            mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+                    disconnectedBufferOptions.setBufferEnabled(true);
+                    disconnectedBufferOptions.setBufferSize(100);
+                    disconnectedBufferOptions.setPersistBuffer(false);
+                    disconnectedBufferOptions.setDeleteOldestMessages(false);
+                    mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
+                    subscribeToTopic();
+                    demandIfCurrent();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.d(TAG, "Failed to connect to: " + serveurUri);
+                }
+            });
+        } catch (MqttException ex){
+            ex.printStackTrace();
+        }
+
         createNotificationChannel();
 
         final UserLocalStore userLocalStore = new UserLocalStore(this);
         userLocalStore.storeUserData(new User("yury", 1, "Yury", "Silvestrov-Henocq"));
         userStored = userLocalStore.getStoredUser();
+
+        publishMessage = "{\"queue\": " + userStored.getAbonnement() + ", \"loggin\": \"" + userStored.getLoggin() + "\"}";
 
         this.status = (TextView)this.findViewById(R.id.status);
         this.refresh_btn = (LinearLayout) this.findViewById(R.id.btn);
@@ -108,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.press_refresh_animation);
                 refresh_icon.startAnimation(animation);
-                refreshText();
+                demandIfCurrent();
             }
         });
     }
@@ -121,90 +146,90 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void refreshText() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                // Instantiate the RequestQueue.
-                String url = "http://yursilv.alwaysdata.net/api/queues/" + userStored.getAbonnement() + "/currentTicket";
+    public void subscribeToTopic(){
+        try {
+            mqttAndroidClient.subscribe(subscriptionTopic, 0, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.d(TAG, "Subscribed! --> " + subscriptionTopic);
+                }
 
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.d(TAG, "Failed to subscribe");
+                }
+            });
 
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                /*Type data_type = new TypeToken<ArrayList<Queue>>(){}.getType();
-                                ArrayList<Queue> data = gson.fromJson(response.toString(), data_type);
-                                StringBuilder str = new StringBuilder();
-                                for (Queue q : data) {
-                                    str.append(q.toString() + "\n");
-                                }*/
-                                Ticket currentTicket = gson.fromJson(response.toString(), Ticket.class);
-                                if (currentTicket.getUserLogin().equals(userStored.getLoggin())) {
-                                    status.setText("Oui vous êtes attendu");
-                                    showNotification("Vous êtes attendu", "Dépêchez vous!");
-                                } else {
-                                    status.setText("Non vous n'êtes pas attendu");
-                                }
-                                Log.d(TAG, currentTicket.toString());
-                                Log.d(TAG, userStored.toString());
-                            }
-                        }, new Response.ErrorListener() {
-
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                // TODO: Handle error
-                                status.setText("Oups! ça marche pas très bien...");
-                                Log.e(TAG, error.toString());
-                            }
-                        });
-
-                // Access the RequestQueue through your singleton class.
-                singleton.addToRequestQueue(jsonObjectRequest);
-            }
-        });
+        } catch (MqttException ex){
+            System.err.println("Exception whilst subscribing");
+            ex.printStackTrace();
+        }
     }
 
-    private void startWebSocket() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    socket = IO.socket("http://yursilv.alwaysdata.net");
-                    socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-
-                        @Override
-                        public void call(Object... args) {
-                            Log.d(TAG, "Conected");
-                            refreshText();
-                        }
-
-                    }).on("update", new Emitter.Listener() {
-
-                        @Override
-                        public void call(Object... args) {
-                            refreshText();
-                        }
-
-                    }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-
-                        @Override
-                        public void call(Object... args) {
-                            Log.d(TAG, "Disconnected");
-                        }
-
-                    }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-
-                        }
-                    });
-                    socket.connect();
-                } catch (URISyntaxException e) {
-                    Log.e(TAG, e.getMessage());
-                }
+    public void demandIfCurrent(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishMessage.getBytes());
+            mqttAndroidClient.publish(publishTopic, message);
+            Log.d(TAG, "Message Published");
+            if(!mqttAndroidClient.isConnected()){
+                Log.d(TAG, mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
             }
-        });
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void refreshText(int message) {
+//        this.status.setText(result);
+        if (message == 0) {
+            status.setText("Oui vous êtes attendu");
+            showNotification("Vous êtes attendu", "Dépêchez vous!");
+        } else {
+            status.setText("Non vous n'êtes pas attendu");
+        }
+//        AsyncTask.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                // Instantiate the RequestQueue.
+//                String url = "http://yursilv.alwaysdata.net/api/queues/" + userStored.getAbonnement() + "/currentTicket";
+//
+//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+//                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+//
+//                            @Override
+//                            public void onResponse(JSONObject response) {
+//                                /*Type data_type = new TypeToken<ArrayList<Queue>>(){}.getType();
+//                                ArrayList<Queue> data = gson.fromJson(response.toString(), data_type);
+//                                StringBuilder str = new StringBuilder();
+//                                for (Queue q : data) {
+//                                    str.append(q.toString() + "\n");
+//                                }*/
+//                                Ticket currentTicket = gson.fromJson(response.toString(), Ticket.class);
+//                                if (currentTicket.getUserLogin().equals(userStored.getLoggin())) {
+//                                    status.setText("Oui vous êtes attendu");
+//                                    showNotification("Vous êtes attendu", "Dépêchez vous!");
+//                                } else {
+//                                    status.setText("Non vous n'êtes pas attendu");
+//                                }
+//                                Log.d(TAG, currentTicket.toString());
+//                                Log.d(TAG, userStored.toString());
+//                            }
+//                        }, new Response.ErrorListener() {
+//
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//                                // TODO: Handle error
+//                                status.setText("Oups! ça marche pas très bien...");
+//                                Log.e(TAG, error.toString());
+//                            }
+//                        });
+//
+//                // Access the RequestQueue through your singleton class.
+//                singleton.addToRequestQueue(jsonObjectRequest);
+//            }
+//        });
     }
 
     private void createNotificationChannel() {
