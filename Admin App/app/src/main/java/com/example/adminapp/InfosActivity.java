@@ -32,11 +32,11 @@ public class InfosActivity extends AppCompatActivity {
         nextButton = (Button)findViewById(R.id.nextButton);
 
         myList = (String) getIntent().getSerializableExtra("name");
-        id = (int) getIntent().getSerializableExtra("id");
+       // id = (int) getIntent().getSerializableExtra("id");
 
         textMenu.setText("Liste " + myList);
         displayData = new DisplayData();
-        displayData.execute(id);
+        //displayData.execute(id);
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +55,7 @@ public class InfosActivity extends AppCompatActivity {
 
     private void nextButtonEvent() throws IOException, JSONException {
         Toast.makeText(getApplicationContext(), "Deleted !", Toast.LENGTH_SHORT).show();
-        deleteCurrentUser(id);
+        //deleteCurrentUser(id);
     }
 
 
@@ -63,8 +63,8 @@ public class InfosActivity extends AppCompatActivity {
         // Instantiate the RequestQueue.
         URL url = new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket");
         DeleteData deleteData = new DeleteData();
-        deleteData.execute(url);
+        //deleteData.execute(url);
         DisplayData displayData = new DisplayData();
-        displayData.execute(id);
+        //displayData.execute(id);
     }
 }
