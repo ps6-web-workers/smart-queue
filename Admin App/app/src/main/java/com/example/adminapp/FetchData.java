@@ -1,16 +1,6 @@
 package com.example.adminapp;
 
 import android.os.AsyncTask;
-import android.util.Log;
-
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.example.adminapp.Models.Queue;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,21 +8,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static android.content.ContentValues.TAG;
 
 public class FetchData extends AsyncTask<Void, Void, Void> {
-    String data ="";
+    /*String data ="";
     String dataParsed="";
     String singleParsed="";
     ArrayList<Student> studentArrayListBRI = new ArrayList<>();
     ArrayList<Student> studentArrayListRespoStage = new ArrayList<>();
-    ArrayList<Student> studentArrayListTuteur = new ArrayList<>();
+    ArrayList<Student> studentArrayListTuteur = new ArrayList<>();*/
     Student currentStudentBRI;
     Student currentStudentRespo;
     Student currentStudentTuteur;
