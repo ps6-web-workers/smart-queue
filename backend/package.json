@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node ./src/server/index.js",
+    "start": "node src/tickets_service/index.js",
     "test": "node ./node_modules/mocha/bin/_mocha --timeout 30000"
   },
   "keywords": [],
@@ -21,6 +21,7 @@
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.2.1",
+    "mqtt": "^3.0.0",
     "pg": "^7.1.2",
     "socket.io": "^2.2.0"
   }
