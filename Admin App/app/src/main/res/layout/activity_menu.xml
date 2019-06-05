@@ -34,48 +34,10 @@
             android:textColor="#000"
             android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/briButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/bri"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:shadowColor="#A8A8A8"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:background="@drawable/button_background"
-            android:layout_margin="15dp"
-            android:shadowRadius="5"/>
+        <ListView
+            android:id="@+id/namelisteid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/respoButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/reponsable_de_stage"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:shadowColor="#A8A8A8"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:layout_margin="15dp"
-            android:textAllCaps="false"
-            android:background="@drawable/button_background"
-            android:shadowRadius="5"/>
-
-        <Button
-            android:id="@+id/tuteurButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/tuteur_de_stage"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:shadowColor="#A8A8A8"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:layout_margin="15dp"
-            android:textAllCaps="false"
-            android:background="@drawable/button_background"
-            android:shadowRadius="5" />
     </LinearLayout>
 </RelativeLayout>
