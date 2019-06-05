@@ -5,9 +5,9 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
-const index = require('../src/server/index');
+const index = require('../src/tickets_service/index');
 
-// simple test just to verify if the server is running
+// simple test just to verify if the tickets_service is running
 describe('routes : index', () => {
     describe('GET /', () => {
         it('should return json', (done) => {
@@ -18,7 +18,7 @@ describe('routes : index', () => {
                     res.status.should.eql(200);
                     res.type.should.eql('application/json');
                     res.body.status.should.equal('success');
-                    res.body.message.should.eql('server running');
+                    res.body.message.should.eql('tickets_service running');
                     done();
                 });
         });
