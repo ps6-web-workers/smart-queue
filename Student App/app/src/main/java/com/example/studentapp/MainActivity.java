@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Mqtt mqtt = new Mqtt();
-        mqtt.currentTicket();
+        mqtt.currentTicket("2");
 
         final UserLocalStore userLocalStore = new UserLocalStore(this);
         userLocalStore.storeUserData(new User("yury", 1, "Yury", "Silvestrov-Henocq"));

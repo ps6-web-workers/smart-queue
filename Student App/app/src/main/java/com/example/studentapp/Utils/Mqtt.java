@@ -32,10 +32,9 @@ public class Mqtt {
         return message;
     }
 
-    public void currentTicket() {
+    public void currentTicket(String queueId) {
         String topic = "currentTicketRequest";
-        String content = "2";
-        MqttMessage message = newMessage(content);
+        MqttMessage message = newMessage(queueId);
 
         try {
             client.publish(topic, message);
