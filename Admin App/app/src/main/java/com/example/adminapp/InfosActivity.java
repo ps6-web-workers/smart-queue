@@ -148,7 +148,7 @@ public class InfosActivity extends AppCompatActivity {
 
 
     private void nextButtonEvent() throws IOException, JSONException {
-        Toast.makeText(getApplicationContext(), "Deleted !", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Au suivant !", Toast.LENGTH_SHORT).show();
         //deleteCurrentUser(id);
         ToneGenerator buzzer = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
         buzzer.startTone(ToneGenerator.TONE_CDMA_PIP, 1000);
@@ -215,7 +215,14 @@ public class InfosActivity extends AppCompatActivity {
     }
 
     public void refreshName(ArrayList<String> names){
-        prenom.setText(names.get(0));
-        nom.setText(names.get(1));
+        String listVide = "Liste vide !";
+        if(names.get(0).equals("ul") || names.get(1).equals("ul")) {
+            prenom.setText(listVide);
+            nom.setText("");
+        }
+        else {
+            prenom.setText(names.get(0));
+            nom.setText(names.get(1));
+        }
     }
 }
