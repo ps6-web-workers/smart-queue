@@ -1,14 +1,12 @@
 package com.example.adminapp;
 
 import android.content.Intent;
-import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -27,36 +25,31 @@ import java.util.ArrayList;
 
 public class MenuActivity extends AppCompatActivity {
 
-    private Button briButton;
-    private Button respoButton;
-    private Button tuteurButton;
     private Intent intent;
     private ListView namesView;
     private MqttAndroidClient mqttAndroidClient;
     private final String serveurUri = "tcp://test.mosquitto.org";
     private String clientId = MqttClient.generateClientId();
     private final String subscriptionTopic = "QueuesResponse";
-    private final String publishTopic = "QueuesRequest";
-    private String publishMessage="1";
+    private final String publishTopic = "androidAdminCurrentTicketRequest";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        briButton = (Button)findViewById(R.id.briButton);
-        //respoButton = (Button)findViewById(R.id.respoButton);
-        //tuteurButton = (Button)findViewById(R.id.tuteurButton);
         namesView = findViewById(R.id.namelisteid);
 
-       namesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-           @Override
-           public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               Intent intentliste = new Intent(MenuActivity.this, InfosActivity.class);
-               String name = (String) parent.getItemAtPosition(position);
-               intentliste.putExtra("name",name);
-               startActivity(intentliste);
-           }
-       });
+        namesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intentliste = new Intent(MenuActivity.this, InfosActivity.class);
+                String name = (String) parent.getItemAtPosition(position);
+                intentliste.putExtra("name",name);
+                intentliste.putExtra("id",position+1);
+                publishMessage(position+1);
+                startActivity(intentliste);
+            }
+        });
 
         mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), serveurUri, clientId);
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
@@ -87,7 +80,7 @@ public class MenuActivity extends AppCompatActivity {
                 ArrayList<String> namesub = new ArrayList<>() ;
 
                 for (String a:namessplit
-                     ) {
+                ) {
                     System.out.println(a);
                     String b = a.substring(1,a.length()-1);
                     namesub.add(b);
@@ -125,31 +118,6 @@ public class MenuActivity extends AppCompatActivity {
         } catch (MqttException ex){
             ex.printStackTrace();
         }
-        //System.out.println(namesList.size());
-    }
-
-
-
-
-    private void goToBRI() {
-        intent = new Intent(MenuActivity.this, InfosActivity.class);
-        intent.putExtra("name", "BRI");
-        intent.putExtra("id", 1);
-        startActivity(intent);
-    }
-
-    private void goToRespo() {
-        intent = new Intent(MenuActivity.this, InfosActivity.class);
-        intent.putExtra("name", "RESPO");
-        intent.putExtra("id", 2);
-        startActivity(intent);
-    }
-
-    private void goToTuteur() {
-        intent = new Intent(MenuActivity.this, InfosActivity.class);
-        intent.putExtra("name", "TUTEUR");
-        intent.putExtra("id", 3);
-        startActivity(intent);
     }
 
 
@@ -172,14 +140,15 @@ public class MenuActivity extends AppCompatActivity {
             System.err.println("Exception whilst subscribing");
             ex.printStackTrace();
         }
-        publishMessage();
+        //publishMessage();
 
     }
 
-    public void publishMessage(){
+    public void publishMessage(int queueId){
 
         try {
             MqttMessage message = new MqttMessage();
+            String publishMessage = Integer.toString(queueId);
             message.setPayload(publishMessage.getBytes());
             mqttAndroidClient.publish(publishTopic, message);
             Log.d("afafa","Message Published");
@@ -192,7 +161,7 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
     public void refreshList(ArrayList<String> names){
-       final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MenuActivity.this,android.R.layout.simple_list_item_1,names);
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MenuActivity.this,android.R.layout.simple_list_item_1,names);
         namesView.setAdapter(arrayAdapter);
     }
 }
