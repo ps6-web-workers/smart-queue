@@ -35,4 +35,10 @@ public class UserLocalStore {
         spEditor.clear();
         spEditor.apply();
     }
+
+    public void updateAbonnement(int queueId) {
+        SharedPreferences.Editor spEditor = userLocalDatabase.edit();
+        spEditor.putInt("abonnement", queueId);
+        spEditor.apply();
+    }
 }

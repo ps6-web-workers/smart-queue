@@ -29,6 +29,10 @@ public class User {
         return lastName;
     }
 
+    public void setAbonnement(int abonnement) {
+        this.abonnement = abonnement;
+    }
+
     @Override
     public String toString() {
         return "User{" +

@@ -53,6 +53,14 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/queue_list"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_height="80dp"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/add_btn"
         android:transitionName="add_btn"
         android:layout_margin="20dp"
