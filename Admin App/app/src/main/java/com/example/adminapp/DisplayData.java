@@ -17,6 +17,7 @@ import java.net.URL;
 public class DisplayData extends AsyncTask<Integer, Void, Void> {
 
     private Student currentStudent;
+    private JSONObject jsonObject;
 
     DisplayData() {
     }
@@ -36,7 +37,7 @@ public class DisplayData extends AsyncTask<Integer, Void, Void> {
                             line = bufferedReader.readLine();
                             data += line;
                         }
-                        JSONObject jsonObject = new JSONObject(data);
+                        jsonObject = new JSONObject(data);
                         currentStudent = new Student((String)jsonObject.get("userFirstName"), (String)jsonObject.get("userLastName"));
                         inputStream.close();
                         httpURLConnection.disconnect();
@@ -58,6 +59,15 @@ public class DisplayData extends AsyncTask<Integer, Void, Void> {
         if(currentStudent != null) {
             InfosActivity.prenom.setText("Prénom : " + currentStudent.getfName());
             InfosActivity.nom.setText("Nom : " + currentStudent.getlName());
+            try {
+                if(jsonObject.get("status").equals("active")) {
+                    //InfosActivity.status.setText("Active");
+                    //InfosActivity.status.setTextColor(0x008000);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
         else {
             InfosActivity.prenom.setText("Prénom : ");

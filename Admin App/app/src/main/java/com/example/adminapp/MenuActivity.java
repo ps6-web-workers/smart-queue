@@ -55,13 +55,17 @@ public class MenuActivity extends AppCompatActivity {
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
-
                 if (reconnect) {
                     Log.d("yfjgilb", "Reconnected to : " + serverURI);
                     // Because Clean Session is true, we need to re-subscribe
                     subscribeToTopic();
                 } else {
                     Log.d("gcjhgcj", "Connected to: " + serverURI);
+                    try {
+                        mqttAndroidClient.publish("QueuesRequest", new MqttMessage());
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

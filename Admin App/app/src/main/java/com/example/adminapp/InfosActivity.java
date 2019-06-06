@@ -162,12 +162,9 @@ public class InfosActivity extends AppCompatActivity {
             MqttMessage message = new MqttMessage();
             String publishMessage = Integer.toString(queueId);
             message.setPayload(publishMessage.getBytes());
-            mqttAndroidClient.publish(publishtopicCurrent, message);
             mqttAndroidClient.publish(publishTopic,message);
+            mqttAndroidClient.publish(publishtopicCurrent, message);
             Log.d("Publishes","Message Published");
-            if(!mqttAndroidClient.isConnected()){
-                Log.d("jfgzlef",mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
-            }
         } catch (MqttException e) {
             System.err.println("Error Publishing: " + e.getMessage());
             e.printStackTrace();

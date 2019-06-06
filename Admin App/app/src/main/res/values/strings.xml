@@ -9,4 +9,5 @@
     <string name="pr_nom">Prénom :</string>
     <string name="nom">Nom :</string>
     <string name="suivant">SUIVANT</string>
+    <string name="status">Status :</string>
 </resources>

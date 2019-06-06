@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="#faebd7"
         tools:context=".InfosActivity">
 
         <ImageView
@@ -77,6 +78,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/nom"
+                        android:textColor="#000"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/status"
                         android:textColor="#000"
                         android:textSize="25sp" />
                 </LinearLayout>

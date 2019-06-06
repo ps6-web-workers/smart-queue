@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextBRI() throws IOException, JSONException {
-        Toast.makeText(getApplicationContext(), "Deleted !", Toast.LENGTH_SHORT).show();
-        deleteCurrentUser(1);
+                Toast.makeText(getApplicationContext(), "Deleted !", Toast.LENGTH_SHORT).show();
+                deleteCurrentUser(1);
 
     }
 
