@@ -1,7 +1,9 @@
 package com.example.studentapp;
 
+import android.app.ActivityOptions;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -31,6 +33,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
     private static final String CHANNEL_ID = "MainActivityNotificationChannel";
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout refresh_btn;
     private ImageView refresh_icon;
     private TextView status;
+    private LinearLayout add_btn;
     private final Gson gson = new Gson();
     private User userStored;
 
@@ -45,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
     private final String serveurUri = "tcp://test.mosquitto.org:1883";
     private String clientId = MqttClient.generateClientId();
     private final String subscriptionTopic = "androidCurrentTicketResponse";
+    private final String subscriptionTopicNeedUpdate = "androidUpdateEtudiantStatus";
     private final String publishTopic = "androidCurrentTicketRequest";
+    private final String publishTopicInscription = "androidInscriptionRequest";
     private String publishMessage;
 
     @Override
@@ -76,7 +83,21 @@ public class MainActivity extends AppCompatActivity {
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 String payload = new String(message.getPayload());
                 Log.d(TAG, "Incoming message payload: " + payload);
-                refreshText(Integer.parseInt(payload));
+                switch (topic) {
+                    case subscriptionTopic:
+                        refreshText(Integer.parseInt(payload));
+                        break;
+                    case subscriptionTopicNeedUpdate:
+                        String[] result = gson.fromJson(payload, String[].class);
+                        if (result[0] != null && result[1] != null) {
+                            if (Integer.parseInt(result[0]) == userStored.getAbonnement() && result[1].equals(userStored.getLoggin())) {
+                                refreshText(0);
+                            }
+                        } else {
+                            refreshText(1);
+                        }
+                        break;
+                }
             }
 
             @Override
@@ -113,19 +134,14 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
-        Mqtt mqtt = new Mqtt();
-        mqtt.currentTicket("2");
-
         final UserLocalStore userLocalStore = new UserLocalStore(this);
         userLocalStore.storeUserData(new User("yury", 1, "Yury", "Silvestrov-Henocq"));
         userStored = userLocalStore.getStoredUser();
 
-        publishMessage = "{\"queue\": " + userStored.getAbonnement() + ", \"loggin\": \"" + userStored.getLoggin() + "\"}";
-
         this.status = (TextView)this.findViewById(R.id.status);
+
         this.refresh_btn = (LinearLayout) this.findViewById(R.id.btn);
         this.refresh_icon = (ImageView) this.findViewById(R.id.refresh_icon);
-
 //        refresh.setVisibility(View.GONE);
         refresh_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +149,16 @@ public class MainActivity extends AppCompatActivity {
                 Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.press_refresh_animation);
                 refresh_icon.startAnimation(animation);
                 demandIfCurrent();
+            }
+        });
+
+        this.add_btn = (LinearLayout)this.findViewById(R.id.add_btn);
+        this.add_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                demandInscription();
+                Intent intent = new Intent(getApplicationContext(), InscriptionActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -156,6 +182,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            mqttAndroidClient.subscribe(subscriptionTopicNeedUpdate, 0, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.d(TAG, "Subscribed! --> " + subscriptionTopicNeedUpdate);
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.d(TAG, "Failed to subscribe");
+                }
+            });
+
         } catch (MqttException ex){
             System.err.println("Exception whilst subscribing");
             ex.printStackTrace();
@@ -164,9 +202,26 @@ public class MainActivity extends AppCompatActivity {
 
     public void demandIfCurrent(){
         try {
+            publishMessage = "{\"queue\": " + userStored.getAbonnement() + ", \"loggin\": \"" + userStored.getLoggin() + "\"}";
             MqttMessage message = new MqttMessage();
             message.setPayload(publishMessage.getBytes());
             mqttAndroidClient.publish(publishTopic, message);
+            Log.d(TAG, "Message Published");
+            if(!mqttAndroidClient.isConnected()){
+                Log.d(TAG, mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void demandInscription() {
+        try {
+            publishMessage = "{\"queue\": " + userStored.getAbonnement() + ", \"userLogin\": \"" + userStored.getLoggin() + "\"}";
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishMessage.getBytes());
+            mqttAndroidClient.publish(publishTopicInscription, message);
             Log.d(TAG, "Message Published");
             if(!mqttAndroidClient.isConnected()){
                 Log.d(TAG, mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
