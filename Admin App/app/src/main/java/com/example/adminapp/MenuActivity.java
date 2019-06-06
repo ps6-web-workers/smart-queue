@@ -32,6 +32,7 @@ public class MenuActivity extends AppCompatActivity {
     private String clientId = MqttClient.generateClientId();
     private final String subscriptionTopic = "QueuesResponse";
     private final String publishTopic = "androidAdminCurrentTicketRequest";
+    private final String subscribeTopic = "androidAdminCurrentTicketResponse";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class MenuActivity extends AppCompatActivity {
                 String name = (String) parent.getItemAtPosition(position);
                 intentliste.putExtra("name",name);
                 intentliste.putExtra("id",position+1);
-                publishMessage(position+1);
+                //publishMessage(position+1);
                 startActivity(intentliste);
             }
         });
@@ -156,6 +157,7 @@ public class MenuActivity extends AppCompatActivity {
             message.setPayload(publishMessage.getBytes());
             mqttAndroidClient.publish(publishTopic, message);
             Log.d("afafa","Message Published");
+
             if(!mqttAndroidClient.isConnected()){
                 Log.d("kjfkujvk",mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
             }

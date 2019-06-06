@@ -81,9 +81,12 @@ public class InfosActivity extends AppCompatActivity {
                 if (reconnect) {
                     Log.d("yfjgilb", "Reconnected to : " + serverURI);
                     // Because Clean Session is true, we need to re-subscribe
+                    publishcurrent(id);
                     subscribeToTopic();
                 } else {
                     Log.d("gcjhgcj", "Connected to: " + serverURI);
+                    subscribeToTopic();
+                    publishcurrent(id);
                 }
             }
 
@@ -150,6 +153,7 @@ public class InfosActivity extends AppCompatActivity {
         ToneGenerator buzzer = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
         buzzer.startTone(ToneGenerator.TONE_CDMA_PIP, 1000);
         publishMessage(id);
+        publishcurrent(id);
     }
 
 
@@ -169,6 +173,18 @@ public class InfosActivity extends AppCompatActivity {
             String publishMessage = Integer.toString(queueId);
             message.setPayload(publishMessage.getBytes());
             mqttAndroidClient.publish(publishTopic,message);
+            Log.d("Publishes","Message Published");
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void publishcurrent(int queueId){
+
+        try {
+            MqttMessage message = new MqttMessage();
+            String publishMessage = Integer.toString(queueId);
+            message.setPayload(publishMessage.getBytes());
             mqttAndroidClient.publish(publishtopicCurrent, message);
             Log.d("Publishes","Message Published");
         } catch (MqttException e) {
