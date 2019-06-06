@@ -1,5 +1,7 @@
 package com.example.adminapp;
 
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,6 +65,7 @@ public class InfosActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     nextButtonEvent();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -137,12 +140,15 @@ public class InfosActivity extends AppCompatActivity {
         } catch (MqttException ex){
             ex.printStackTrace();
         }
+
     }
 
 
     private void nextButtonEvent() throws IOException, JSONException {
         Toast.makeText(getApplicationContext(), "Deleted !", Toast.LENGTH_SHORT).show();
         //deleteCurrentUser(id);
+        ToneGenerator buzzer = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+        buzzer.startTone(ToneGenerator.TONE_CDMA_PIP, 1000);
         publishMessage(id);
     }
 
