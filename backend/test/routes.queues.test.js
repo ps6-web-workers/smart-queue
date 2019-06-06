@@ -5,8 +5,8 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
-    const index = require('../src/tickets_service/index');
-    const knex = require('../src/tickets_service/db/connection');
+const server = require('../src/server/index');
+const knex = require('../src/server/db/connection');
 
     describe('routes : users', () => {
 
@@ -24,7 +24,7 @@ chai.use(chaiHttp);
 
         describe('GET /api/queues', () => {
             it('should return all queues', (done) => {
-                chai.request(index.server)
+                chai.request(server)
                     .get('/api/queues')
                     .end((err, res) => {
                         should.not.exist(err);
@@ -41,7 +41,7 @@ chai.use(chaiHttp);
 
         describe('GET /api/queues/1', () => {
             it('should return a single queue', (done) => {
-                chai.request(index.server)
+                chai.request(server)
                     .get('/api/queues/1')
                     .end((err, res) => {
                         should.not.exist(err);
@@ -57,11 +57,11 @@ chai.use(chaiHttp);
 
         describe('GET /api/queues/1/nextTicket', () => {
             it('should return the next ticket', (done) => {
-                chai.request(index.server)
+                chai.request(server)
                     .get('/api/queues/1')
                     .end((err, res) => {
                         const initialLength = res.body.tickets.length;
-                        chai.request(index.server)
+                        chai.request(server)
                             .get('/api/queues/1/nextTicket')
                             .end((err, res) => {
                                 should.not.exist(err);

@@ -85,7 +85,7 @@ exports.seed = (knex) => {
 
             // BRI
             await knex('tickets').insert({
-                status: 'active',
+                status: 'current',
                 queueId: 1,
                 userId: 1
             });
@@ -98,11 +98,36 @@ exports.seed = (knex) => {
                 status: 'active',
                 queueId: 1,
                 userId: 2
-        });
+            });
+            await knex('tickets').insert({
+                status: 'passive',
+                queueId: 1,
+                userId: 3
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 7
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 9
+            });
+            await knex('tickets').insert({
+                status: 'passive',
+                queueId: 1,
+                userId: 8
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 10
+            });
 
             // Responsable de stage
             await knex('tickets').insert({
-                status: 'active',
+                status: 'current',
                 queueId: 2,
                 userId: 3
             });
@@ -129,7 +154,7 @@ exports.seed = (knex) => {
 
             // Tuteur de stage
             await knex('tickets').insert({
-                status: 'active',
+                status: 'current',
                 queueId: 3,
                 userId: 8
             });
@@ -157,22 +182,6 @@ exports.seed = (knex) => {
                 status: 'active',
                 queueId: 3,
                 userId: 12
-            });
-
-            // CURRENT TICKETS
-            await knex('currentTickets').del();
-
-            await knex('currentTickets').insert({
-                queueId: 1,
-                ticketId: 1
-            });
-            await knex('currentTickets').insert({
-                queueId: 2,
-                ticketId: 4
-            });
-            await knex('currentTickets').insert({
-                queueId: 3,
-                ticketId: 8
             });
 
             resolve();
