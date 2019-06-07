@@ -26,6 +26,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.json.JSONObject;
+
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
@@ -79,6 +81,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+//        Mqtt.mqtt.subscribe("androidIsSubcribedResponse", new Executer() {
+//            @Override
+//            public void execute(String messageFromMqtt) {
+//                Log.d(TAG, messageFromMqtt);
+//                JsonObject obj = gson.fromJson(messageFromMqtt, JsonObject.class);
+//                int id = gson.fromJson(obj.get("id"), Integer.class);
+//                String loggin = gson.fromJson(obj.get("loggin"), String.class);
+//                boolean state = gson.fromJson(obj.get("state"), Boolean.class);
+//                if (userStored.getAbonnement() == id && userStored.getLoggin().equals(loggin)) {
+//                    subcribtion = state;
+//                    demandIfCurrent();
+//                }
+//                Log.d(TAG, subcribtion.toString());
+//            }
+//        });
 
         createNotificationChannel();
         refresh_animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.press_refresh_animation);
@@ -162,6 +179,11 @@ public class MainActivity extends AppCompatActivity {
         Mqtt.mqtt.publish("androidCurrentTicketRequest", publishMessage);
     }
 
+//    public void demandIfSubcribed(){
+//        publishMessage = "{\"queue\": " + userStored.getAbonnement() + ", \"loggin\": \"" + userStored.getLoggin() + "\"}";
+//        Mqtt.mqtt.publish("androidIsSubcribedRequest", publishMessage);
+//    }
+
     private void refreshText(int message) {
         refresh_icon.startAnimation(refresh_animation);
         switch (message) {
@@ -179,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 status.setText("Non vous n'êtes pas attendu");
                 break;
         }
+
     }
 
     private void createNotificationChannel() {
@@ -199,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
                 .setSmallIcon(R.drawable.check)
                 .setContentTitle(title)
                 .setContentText(content)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setPriority(NotificationCompat.PRIORITY_MAX);
         Log.d("Main Activity:", "test notification pushed");
         notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
     }
