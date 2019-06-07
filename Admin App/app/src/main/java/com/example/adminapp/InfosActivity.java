@@ -156,16 +156,6 @@ public class InfosActivity extends AppCompatActivity {
         publishcurrent(id);
     }
 
-
-    void deleteCurrentUser(final int id) throws IOException, JSONException {
-        // Instantiate the RequestQueue.
-        URL url = new URL("http://yursilv.alwaysdata.net/api/queues/" + id + "/nextTicket");
-        DeleteData deleteData = new DeleteData();
-        //deleteData.execute(url);
-        DisplayData displayData = new DisplayData();
-        //displayData.execute(id);
-    }
-
     public void publishMessage(int queueId){
 
         try {
