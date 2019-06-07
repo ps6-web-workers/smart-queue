@@ -47,12 +47,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         Mqtt.initialize(this);
 
         Mqtt.mqtt.subscribe("androidCurrentTicketResponse", new Executer() {
             @Override
             public void execute(String messageFromMqtt) {
-                refreshText(Integer.parseInt(messageFromMqtt));
+                String[] str = messageFromMqtt.split(",");
+                if (Integer.parseInt(str[0]) == userStored.getAbonnement()) {
+                    if (str[1].equals(userStored.getLoggin())) {
+                        refreshText(0);
+                    } else {
+                        refreshText(1);
+                    }
+                } else {
+                    refreshText(1);
+                }
             }
         });
         Mqtt.mqtt.subscribe("androidUpdateEtudiantStatus", new Executer() {
@@ -74,9 +84,10 @@ public class MainActivity extends AppCompatActivity {
         refresh_animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.press_refresh_animation);
 
         final UserLocalStore userLocalStore = new UserLocalStore(this);
-//        userLocalStore.storeUserData(new User("yury", 3, "Yury", "Silvestrov-Henocq"));
+        userLocalStore.storeUserData(new User("yury", 2, "Yury", "Silvestrov-Henocq"));
 
         userStored = userLocalStore.getStoredUser();
+        publishMessage = "{\"queue\": " + userStored.getAbonnement() + "}";
 
         this.status = (TextView)this.findViewById(R.id.status);
 
@@ -86,13 +97,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 refresh_icon.startAnimation(refresh_animation);
-                demandIfCurrent();
+                Mqtt.mqtt.publish("androidCurrentTicketRequest", publishMessage);
             }
         });
 
         this.queue_list = (LinearLayout)this.findViewById(R.id.queue_list);
 
-        demandIfCurrent();
+        Mqtt.mqtt.publish("androidCurrentTicketRequest", publishMessage);
 
         Mqtt.mqtt.publish("androidRequestQueueList", "");
         Mqtt.mqtt.subscribe("androidRequestQueueResponse", new Executer() {
@@ -113,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             userStored.setAbonnement(Integer.parseInt(item.getTag().toString()));
                             userLocalStore.storeUserData(userStored);
-                            demandIfCurrent();
+                            Mqtt.mqtt.publish("androidCurrentTicketRequest", publishMessage);
                             refresh_list();
                         }
                     });
@@ -146,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Demande d'inscription envoyé", Toast.LENGTH_SHORT).show();
     }
 
-    public void demandIfCurrent(){
+    public void demandIfCurrent() {
         publishMessage = "{\"queue\": " + userStored.getAbonnement() + ", \"loggin\": \"" + userStored.getLoggin() + "\"}";
         Mqtt.mqtt.publish("androidCurrentTicketRequest", publishMessage);
     }

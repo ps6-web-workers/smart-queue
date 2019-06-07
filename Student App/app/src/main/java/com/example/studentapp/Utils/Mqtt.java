@@ -47,7 +47,7 @@ public class Mqtt {
         subscribeList = new ArrayList<>();
 
         qos = 2;
-        broker = "tcp://iot.eclipse.org:1883";
+        broker = "tcp://172.20.10.14:1883";
         clientId = MqttClient.generateClientId();
         connOpts = new MqttConnectOptions();
         connOpts.setAutomaticReconnect(true);
