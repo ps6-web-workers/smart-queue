@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@android:color/transparent">
+
+    <HorizontalScrollView
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/add_btn">
+
+        <LinearLayout
+            android:id="@+id/queue_list"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+
+            <!--<Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/background_refresh_button"/>
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/background_refresh_button"/>
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/background_refresh_button"/>
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/background_refresh_button"/>-->
+           </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!--<com.lukedeighton.wheelview.WheelView
+        android:id="@+id/wheel_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:wheelRadius="300dp"
+        app:wheelColor="#8d8d8d"
+        app:wheelItemRadius="60dp"
+        app:wheelPosition="bottom"
+        app:wheelOffsetY="40dp"
+        app:selectionPadding="20dp"
+        app:selectionAngle="90.0"
+        app:repeatItems="true" />-->
+
+    <LinearLayout
+        android:id="@+id/add_btn"
+        android:transitionName="add_btn"
+        android:layout_margin="20dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/background_refresh_button"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/cross_icon"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/cross" />
+
+    </LinearLayout>
+
+</RelativeLayout>

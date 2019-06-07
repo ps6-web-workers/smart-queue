@@ -34,6 +34,36 @@ exports.seed = (knex) => {
                 firstName: 'Donélia',
                 lastName: 'Monin',
             });
+            await knex('users').insert({
+                login: 'vincentc',
+                firstName: 'Vincent',
+                lastName: 'Coppe',
+            });
+            await knex('users').insert({
+                login: 'armand',
+                firstName: 'Armand',
+                lastName: 'Boulanger',
+            });
+            await knex('users').insert({
+                login: 'alexn',
+                firstName: 'Alexandre',
+                lastName: 'Nicaise',
+            });
+            await knex('users').insert({
+                login: 'kevinv',
+                firstName: 'Kevin',
+                lastName: 'Valerio',
+            });
+            await knex('users').insert({
+                login: 'yannis',
+                firstName: 'Yannis',
+                lastName: 'Falco',
+            });
+            await knex('users').insert({
+                login: 'gabriel',
+                firstName: 'Gabriel',
+                lastName: 'Revelli',
+            });
 
 
             // QUEUES
@@ -50,61 +80,108 @@ exports.seed = (knex) => {
             });
 
 
-            // USERS TO QUEUES
-            await knex('usersToQueues').del();
+            // ALL TICKETS
+            await knex('tickets').del();
 
             // BRI
-            await knex('usersToQueues').insert({
-                queueName: 'BRI',
-                userLogin: 'romain'
+            await knex('tickets').insert({
+                status: 'current',
+                queueId: 1,
+                userId: 1
             });
-            await knex('usersToQueues').insert({
-                queueName: 'BRI',
-                userLogin: 'anass'
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 5
             });
-            await knex('usersToQueues').insert({
-                queueName: 'BRI',
-                userLogin: 'yury'
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 2
+            });
+            await knex('tickets').insert({
+                status: 'passive',
+                queueId: 1,
+                userId: 3
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 7
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 9
+            });
+            await knex('tickets').insert({
+                status: 'passive',
+                queueId: 1,
+                userId: 8
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 1,
+                userId: 10
             });
 
             // Responsable de stage
-            await knex('usersToQueues').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'romain'
+            await knex('tickets').insert({
+                status: 'current',
+                queueId: 2,
+                userId: 3
             });
-            await knex('usersToQueues').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'nouamane'
+            await knex('tickets').insert({
+                status: 'passive',
+                queueId: 2,
+                userId: 1
             });
-            await knex('usersToQueues').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'paul-marie'
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 2,
+                userId: 4
             });
-            await knex('usersToQueues').insert({
-                queueName: 'Responsable de stage',
-                userLogin: 'donelia'
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 2,
+                userId: 6
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 2,
+                userId: 7
             });
 
             // Tuteur de stage
-            await knex('usersToQueues').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'yury'
+            await knex('tickets').insert({
+                status: 'current',
+                queueId: 3,
+                userId: 8
             });
-            await knex('usersToQueues').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'nouamane'
+            await knex('tickets').insert({
+                status: 'passive',
+                queueId: 3,
+                userId: 1
             });
-            await knex('usersToQueues').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'romain'
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 3,
+                userId: 9
             });
-            await knex('usersToQueues').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'donelia'
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 3,
+                userId: 10
             });
-            await knex('usersToQueues').insert({
-                queueName: 'Tuteur de stage',
-                userLogin: 'anass'
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 3,
+                userId: 11
+            });
+            await knex('tickets').insert({
+                status: 'active',
+                queueId: 3,
+                userId: 12
             });
 
             resolve();
